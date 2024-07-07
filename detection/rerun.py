@@ -6,14 +6,16 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_groq import ChatGroq
 from groq import Groq
 import json
+from dotenv import load_dotenv
+load_dotenv()
 
 # Initialize Groq with the API key
-#client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 chat = ChatGroq(
     temperature=0,
     model="mixtral-8x7b-32768",
-    api_key="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"
+    api_key=client
 )
 
 # Define a chain of thought prompt template

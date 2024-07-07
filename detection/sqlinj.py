@@ -7,12 +7,12 @@ from langchain_groq import ChatGroq
 from groq import Groq
 
 # Initialize Groq with the API key
-#client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 chat = ChatGroq(
     temperature=0,
     model="mixtral-8x7b-32768",
-    api_key="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"
+    api_key=client
 )
 
 # Define a chain of thought prompt template for SQL injection detection
