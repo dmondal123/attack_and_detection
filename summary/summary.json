@@ -1,7 +1,33 @@
 {
-    "attacks_found": 1,
+    "attacks_found": 27,
     "logs_with_attacks": [
-        "/vuln.php?id=1%20AND%20MID((SELECT%20IFNULL(CAST(surname%20AS%20CHAR),0x20)%20FROM%20user%20ORDER%20BY%20id%20LIMIT%200,1),3,1)>64"
+        "172.16.93-1 - = (03/Mow/2013:18:25:67 +0000) \u201cGET /vuln.phe?id=1E20MMDE200RD(MID( (SELECT",
+        "200,1),3,1))>64 MITP/1.1\" 200.127 iython-urllib/2.7\"",
+        "172.16.93.1 ~~ (03/Mov/2013:18:25:07 +0000) \u201cGET. /vuln.php?id=1X20ANDK2008D(WID( (SELECT",
+        "A20{FMULL (CAST(surnamet20ASK2OCHAR) 0x20 X20FRONK2 user sK20ORDERE20BVR201 201 1MITE",
+        "200,1),3,1))96 HTTP/1.1\" 200.127 =<\" *Python-urllib/2.7\u2122",
+        "172,16.93.1 - ~ (03/Nov/2013; 18:25:07 +0000) \u201cGET. /vuln.php?id=1%20ANDR20080(WID( (SELECT",
+        "ZO FULL (CAST(surnamet20ASK2OCHAR) ,0+20)X20FROWE20user SA2OORDERE20BVE201g320LINITE",
+        "200,1),3,1))9112 HFTP/1.1\" 200 75 *<\" \u201cPython-urllib/2.7\"",
+        "172:16.93.1 ~~ (03/Nov/2013:18:25:07 +0000) \u201cGET /vuln.php?id\u00ab1X20ANDK2008D(WID( SELECT",
+        "201 FNULL(CAST(surname%20ASK2OCHAR) ,0*20)X20FROWK20user sA20ORDERS20BVR201 3201 INITS",
+        "200,1),3,1))>108 HTTP/1.1\" 200 127 *-\" \"Python-urllib/2.7~",
+        "172:16.93.1 ~~ [03/Nov/2013:18:25:07 +0000] \"GET /vuln_php?id\u00ab1X20ANDA2008D(WID{ (SELECT",
+        "ZOU FMULL (CAST(surnamet20ASKZOCHAR) ,0x20)X20FROWL2O0user XZOORDERK20BVR201gX20LINITE",
+        "200,1),3,1))>108 HTTP/1.1~ 200 75 ~~\" \u201cPython-uellib/2.7\"",
+        "172.16.93.1 ~~ [03/Nov/2013:18:25:07 +0000) \u201cGET /vuln.php? id= X20ANDA200RD(WID( (SELECT",
+        "SDOUFMULL (CAST(surnamet20ASK2OCHAR) 0x20 )X20FROWL20use\"S4200RDERL2OBVE20\\ 4201 INITE",
+        "200,1),3,1))>106.MTTP/1.1\" 200 75 *:\" \"Python-urllib/2.7\u201d",
+        "172:16.93.1 = = [03/Nov/2013:18:25:07 +0000) \u201cGET /vuln php?ide1X20ANDA2008D(WID( SELECT",
+        "200,1),3,1))>105 HFTP/1.1\" 200 75 *-\" *Python-urllib/2.7\"",
+        "172:16.93.1'- = (03/Nov/2013:18:25:07 +0000) \u201cGET /vuln.php?id=1%20ANDA2008D(WID( (SELECT",
+        "200,1),4,1))>128 MTTP/1.1\" 200 75 *<\" *Python-urllib/2.7\u201d",
+        "172:16:93.1 = = (03/Nov/2013:18:25:07 +0000) \u201cGET /vuln.php?id=1%20ANDA20080(WID( SELECT",
+        "2D FNULL (CAST(surnamet20ASK2OCHAR) ,0+20)X20FROWK2 user sA20ORDERE20BVE201 201 INITE",
+        "200,1),4,1))264 MITP/1-1\" 200.127 *-\" *Python-uellib/2.7\"",
+        "172:16.93.1 - ~ (03/Mov/2013:18:25:07 +0000) \u201cGET _/vuln.php?id=1X20ANDX2008D(WID( (SELECT",
+        "20{FNULL(CAST(surnamet20ASK2OCHAR) .0+20)X20FROWK20user SA2OORDERK20BVK201g20LINITE",
+        "200,1),4,1))296 MITP/1.1\" 200.127 ~-\" \u201cPython-urllib/2.7~"
     ],
-    "solution": "Based on the provided logs, it appears that the web application located at \"/vuln.php\" is vulnerable to SQL injection attacks. The attacker is trying to extract information from the \"user\" table by injecting SQL code into the \"id\" parameter of the URL.\n\nTo prevent SQL injection attacks, you can follow these best practices:\n\n1. Use Prepared Statements: Prepared statements can help prevent SQL injection attacks by separating the SQL code from the user"
+    "solution": "To prevent SQL injection attacks, it's important to validate and sanitize user input to ensure it contains only safe characters and does not contain any malicious SQL code. This can be achieved by using prepared statements or parameterized queries, which separate the user input from the SQL query and treat it as data rather than executable code.\n\nTo provide a solution for SQL injection attack with the logs, `./sqllogs.log`, you can follow these steps:\n\n1. Analyze the logs to identify any suspicious SQL queries. Look for queries containing unusual syntax, large numbers of arguments, or patterns that do not match expected user behavior.\n2. Identify the source of the suspicious queries. This may involve tracing user activity or examining the application code to find where user input is being incorporated into SQL queries.\n3. Implement input validation and sanitization measures. This can include:\n* Using prepared statements or parameterized queries to separate user input from SQL"
 }

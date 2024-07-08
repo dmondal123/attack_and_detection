@@ -7,21 +7,25 @@ load_dotenv()
 
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
-def detect_sql_injection_in_log_file(logs):
+def detect_sql_injection_in_log_file(log_filepath):
     """
-    Detect SQL injection patterns in log entries and return a summary.
+    Detect SQL injection patterns in log entries from a file and return a summary.
 
-    This function analyzes the provided log entries and detects lines that
+    This function analyzes the log entries from the provided file and detects lines that
     match common SQL injection patterns. It returns a summary in JSON format indicating
     the number of attacks found, the specific logs with the attacks, and a recommended solution.
 
     Parameters:
-    logs (str): The log entries to be analyzed.
+    log_filepath (str): The file path of the log entries to be analyzed.
 
     Returns:
     dict: A summary containing the number of attacks found, the specific logs with the attacks, 
           and a recommended solution. The summary is also saved as a JSON file in a 'summary' folder.
     """
+    # Read the log file content
+    with open(log_filepath, 'r') as file:
+        logs = file.read()
+    
     # Define the regex pattern to detect SQL injection patterns
     sql_injection_patterns = [
         r"SELECT", r"UNION", r"INSERT", r"UPDATE", r"DELETE", r"DROP", r"ALTER", r"AND", r"OR",
@@ -37,7 +41,6 @@ def detect_sql_injection_in_log_file(logs):
         if pattern.search(line):
             suspicious_lines.append(line.strip())
 
-    # Summarize findings in JSON format
     summary = {
         "attacks_found": len(suspicious_lines),
         "logs_with_attacks": suspicious_lines,
@@ -46,28 +49,7 @@ def detect_sql_injection_in_log_file(logs):
 
     return summary
 
-
-logs = '''
-172.16.93.1 - - [03/Nov/2013:18:25:07 +0000] "GET /vuln.php?id=1%20AND%20MID((SELECT%20IFNULL(CAST(surname%20AS%20CHAR),0x20)%20FROM%20user%20ORDER%20BY%20id%20LIMIT%200,1),3,1)>64 HTTP/1.1" 200 127 "Python-urllib/2.7"
-
-172.16.93.1 - - [03/Nov/2013:18:25:07 +0000] "GET /vuln.php?id=1%20AND%20MID((SELECT%20IFNULL(CAST(surname%20AS%20CHAR),0x20)%20FROM%20user%20ORDER%20BY%20id%20LIMIT%200,1),3,1)>96 HTTP/1.1" 200 127 "Python-urllib/2.7"
-
-172.16.93.1 - - [03/Nov/2013:18:25:07 +0000] "GET /vuln.php?id=1%20AND%20MID((SELECT%20IFNULL(CAST(surname%20AS%20CHAR),0x20)%20FROM%20user%20ORDER%20BY%20id%20LIMIT%200,1),3,1)>112 HTTP/1.1" 200 75 "Python-urllib/2.7"
-
-172.16.93.1 - - [03/Nov/2013:18:25:07 +0000] "GET /vuln.php?id=1%20AND%20MID((SELECT%20IFNULL(CAST(surname%20AS%20CHAR),0x20)%20FROM%20user%20ORDER%20BY%20id%20LIMIT%200,1),3,1)>108 HTTP/1.1" 200 127 "Python-urllib/2.7"
-
-172.16.93.1 - - [03/Nov/2013:18:25:07 +0000] "GET /vuln.php?id=1%20AND%20MID((SELECT%20IFNULL(CAST(surname%20AS%20CHAR),0x20)%20FROM%20user%20ORDER%20BY%20id%20LIMIT%200,1),3,1)>108 HTTP/1.1" 200 75 "Python-urllib/2.7"
-
-172.16.93.1 - - [03/Nov/2013:18:25:07 +0000] "GET /vuln.php?id=1%20AND%20MID((SELECT%20IFNULL(CAST(surname%20AS%20CHAR),0x20)%20FROM%20user%20ORDER%20BY%20id%20LIMIT%200,1),3,1)>106 HTTP/1.1" 200 75 "Python-urllib/2.7"
-
-172.16.93.1 - - [03/Nov/2013:18:25:07 +0000] "GET /vuln.php?id=1%20AND%20MID((SELECT%20IFNULL(CAST(surname%20AS%20CHAR),0x20)%20FROM%20user%20ORDER%20BY%20id%20LIMIT%200,1),3,1)>105 HTTP/1.1" 200 75 "Python-urllib/2.7"
-
-172.16.93.1 - - [03/Nov/2013:18:25:07 +0000] "GET /vuln.php?id=1%20AND%20MID((SELECT%20IFNULL(CAST(surname%20AS%20CHAR),0x20)%20FROM%20user%20ORDER%20BY%20id%20LIMIT%200,1),4,1)>128 HTTP/1.1" 200 75 "Python-urllib/2.7"
-
-172.16.93.1 - - [03/Nov/2013:18:25:07 +0000] "GET /vuln.php?id=1%20AND%20MID((SELECT%20IFNULL(CAST(surname%20AS%20CHAR),0x20)%20FROM%20user%20ORDER%20BY%20id%20LIMIT%200,1),4,1)>264 HTTP/1.1" 200 127 "Python-urllib/2.7"
-
-172.16.93.1 - - [03/Nov/2013:18:25:07 +0000] "GET /vuln.php?id=1%20AND%20MID((SELECT%20IFNULL(CAST(surname%20AS%20CHAR),0x20)%20FROM%20user%20ORDER%20BY%20id%20LIMIT%200,1),4,1)>296 HTTP/1.1" 200 127 "Python-urllib/2.7"
-'''
+logs = "./sqllogs.log"
 
 mixtral_msg = f"Detect the sql injection attack with the logs, {logs}"
 
@@ -95,9 +77,9 @@ detect_sql_injection_function = {
         "parameters": {
             "type": "object",
             "properties": {
-                "logs": {
+                "log_filepath": {
                     "type": "string",
-                    "description": "The logs of a vulnerable application with sql injection vulnerability."
+                    "description": "The file path of the logs of a vulnerable application with SQL injection vulnerability."
                 }
             },
         },
