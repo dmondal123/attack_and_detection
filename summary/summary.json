@@ -3,5 +3,5 @@
     "logs_with_attacks": [
         "/vuln.php?id=1%20AND%20MID((SELECT%20IFNULL(CAST(surname%20AS%20CHAR),0x20)%20FROM%20user%20ORDER%20BY%20id%20LIMIT%200,1),3,1)>64"
     ],
-    "solution": "Sanitize inputs and use parameterized queries to prevent SQL injection."
+    "solution": "Based on the provided logs, it appears that the web application located at \"/vuln.php\" is vulnerable to SQL injection attacks. The attacker is trying to extract information from the \"user\" table by injecting SQL code into the \"id\" parameter of the URL.\n\nTo prevent SQL injection attacks, you can follow these best practices:\n\n1. Use Prepared Statements: Prepared statements can help prevent SQL injection attacks by separating the SQL code from the user"
 }

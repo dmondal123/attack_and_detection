@@ -41,7 +41,7 @@ def detect_sql_injection_in_log_file(logs):
     summary = {
         "attacks_found": len(suspicious_lines),
         "logs_with_attacks": suspicious_lines,
-        "solution": "Sanitize inputs and use parameterized queries to prevent SQL injection."
+        "solution": ""
     }
 
     return summary
@@ -123,6 +123,25 @@ if isinstance(tool_args, str):
 # Call the function with the correct arguments
 response = detect_sql_injection_in_log_file(**tool_args)
 print(response)
+
+solution_msg = f"Give a solution for sql injection attack with the logs, {logs}"
+
+def query_solution(msg):
+    """
+    This function sends a request to the Mistral TGI endpoint using a Groq API token.
+    """
+    response = client.chat.completions.create(model="mixtral-8x7b-32768",
+                                              messages=[{'role': 'user', 'content': msg}],
+                                              max_tokens=100)
+
+    return response
+
+solution = query_solution(solution_msg)
+#print(solution)
+content = solution.choices[0].message.content
+print(content)
+
+response["solution"] = content
 
 # Save summary as JSON file
 save_folder = "summary"
