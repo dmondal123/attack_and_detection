@@ -9,11 +9,11 @@ client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 def detect_sql_injection_in_log_file(log_filepath):
     """
-    Detect SQL injection patterns in log entries from a file and return a summary.
+    Detect SQL injection patterns in WebGoat log entries from a file and return a summary.
 
     This function analyzes the log entries from the provided file and detects lines that
-    match common SQL injection patterns. It returns a summary in JSON format indicating
-    the number of attacks found, the specific logs with the attacks, and a recommended solution.
+    match SQL injection patterns specific to WebGoat logs. It returns a summary in JSON format 
+    indicating the number of attacks found, the specific logs with the attacks, and a recommended solution.
 
     Parameters:
     log_filepath (str): The file path of the log entries to be analyzed.
@@ -26,10 +26,12 @@ def detect_sql_injection_in_log_file(log_filepath):
     with open(log_filepath, 'r') as file:
         logs = file.read()
     
-    # Define the regex pattern to detect SQL injection patterns
+    # Define the regex patterns to detect SQL injection in WebGoat logs
     sql_injection_patterns = [
-        r"SELECT", r"UNION", r"INSERT", r"UPDATE", r"DELETE", r"DROP", r"ALTER", r"AND", r"OR",
-        r"--", r";", r"/\*", r"\*/", r"'", r"\""
+        r'/SqlInjection(Advanced)?/attack\d+',  # SQL Injection lesson endpoints
+        r'parameters=\{masked\}',  # Masked parameters, potentially containing SQL injection
+        r'Extracted JDBC value.*SqlInjection',  # Database activity related to SQL Injection lessons
+        r'org\.owasp\.webgoat\.container\.lessons\.Assignment.*SqlInjection',  # SQL Injection lesson assignments
     ]
     pattern = re.compile('|'.join(sql_injection_patterns), re.IGNORECASE)
     
@@ -37,15 +39,21 @@ def detect_sql_injection_in_log_file(log_filepath):
     lines = logs.split('\n')
     suspicious_lines = []
 
-    for line in lines[-50000:]:  # Analyze the last 50,000 lines
+    for line_number, line in enumerate(lines, 1):
         if pattern.search(line):
-            suspicious_lines.append(line.strip())
+            suspicious_lines.append(f"Line {line_number}: {line.strip()}")
 
     summary = {
         "attacks_found": len(suspicious_lines),
         "logs_with_attacks": suspicious_lines,
         "solution": ""
     }
+
+    # Save summary to a JSON file
+    os.makedirs('summary', exist_ok=True)
+    summary_filepath = os.path.join('summary', 'sql_injection_summary.json')
+    with open(summary_filepath, 'w') as summary_file:
+        json.dump(summary, summary_file, indent=2)
 
     return summary
 
