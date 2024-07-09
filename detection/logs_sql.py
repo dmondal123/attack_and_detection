@@ -51,7 +51,7 @@ def detect_sql_injection_in_log_file(log_filepath):
 
     return summary
 
-logs = "./filteredlogs.log"
+logs = "/Users/dmondal/Downloads/LLM-on-CPU/filteredlogs.log"
 
 mixtral_msg = f"Detect the sql injection attack with the logs, {logs}"
 

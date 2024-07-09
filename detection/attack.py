@@ -6,42 +6,52 @@ from dotenv import load_dotenv
 import sys
 from typing import Dict
 
-sys.path.append('/Users/dmondal/miniforge3/envs/llmapp/lib/python3.10/site-packages')
+#sys.path.append('/Users/dmondal/miniforge3/envs/llmapp/lib/python3.10/site-packages')
 from groq import Groq
 
 load_dotenv()
 
-client = Groq(api_key="GROQ_API_KEY")
+# client = Groq(api_key="GROQ_API_KEY")
+client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 app = FastAPI()
 
 
-def detect_sql_injection_in_log_file(log_filepath: str) -> Dict:
+def detect_sql_injection_in_log_file(log_filepath):
     """
-    Detect SQL injection patterns in log entries from a file and return a summary.
+    Detect SQL injection patterns in WebGoat log entries from a file and return a summary.
 
     This function analyzes the log entries from the provided file and detects lines that
-    match common SQL injection patterns. It returns a summary in JSON format indicating
-    the number of attacks found, the specific logs with the attacks, and a recommended solution.
+    match SQL injection patterns specific to WebGoat logs. It returns a summary in JSON format 
+    indicating the number of attacks found, the specific logs with the attacks, and a recommended solution.
 
     Parameters:
     log_filepath (str): The file path of the log entries to be analyzed.
 
     Returns:
-    dict: A summary containing the number of attacks found, the specific logs with the attacks,
+    dict: A summary containing the number of attacks found, the specific logs with the attacks, 
           and a recommended solution. The summary is also saved as a JSON file in a 'summary' folder.
     """
+    # Read the log file content
     with open(log_filepath, 'r') as file:
         logs = file.read()
-
+    
+    # Define the regex patterns to detect SQL injection in WebGoat logs
     sql_injection_patterns = [
-        r"SELECT", r"UNION", r"INSERT", r"UPDATE", r"DELETE", r"DROP", r"ALTER", r"AND", r"OR",
-        r"--", r";", r"/\*", r"\*/", r"'", r"\""
+        r'SqlInjectionAdvanced/attack6a',  # SQL Injection lesson endpoints
+        r'parameters=\{masked\}',  # Masked parameters, potentially containing SQL injection
+        r'Extracted JDBC value.*SqlInjection',  # Database activity related to SQL Injection lessons
+        r'org\.owasp\.webgoat\.container\.lessons\.Assignment.*SqlInjection',  # SQL Injection lesson assignments
     ]
     pattern = re.compile('|'.join(sql_injection_patterns), re.IGNORECASE)
-
+    
+    # Split logs into lines
     lines = logs.split('\n')
-    suspicious_lines = [line.strip() for line in lines[-50000:] if pattern.search(line)]
+    suspicious_lines = []
+
+    for line_number, line in enumerate(lines, 1):
+        if pattern.search(line):
+            suspicious_lines.append(f"Line {line_number}: {line.strip()}")
 
     summary = {
         "attacks_found": len(suspicious_lines),
@@ -125,7 +135,6 @@ async def detect_sql_injection(file: UploadFile = File(...)):
             json.dump(response, json_file, indent=4)
 
         os.remove(log_filepath)  # Clean up the saved file
-
         return response
 
     except Exception as e:
