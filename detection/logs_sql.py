@@ -28,7 +28,7 @@ def detect_sql_injection_in_log_file(log_filepath):
     
     # Define the regex patterns to detect SQL injection in WebGoat logs
     sql_injection_patterns = [
-        r'/SqlInjection(Advanced)?/attack\d+',  # SQL Injection lesson endpoints
+        r'SqlInjectionAdvanced/attack6a',  # SQL Injection lesson endpoints
         r'parameters=\{masked\}',  # Masked parameters, potentially containing SQL injection
         r'Extracted JDBC value.*SqlInjection',  # Database activity related to SQL Injection lessons
         r'org\.owasp\.webgoat\.container\.lessons\.Assignment.*SqlInjection',  # SQL Injection lesson assignments
@@ -49,15 +49,9 @@ def detect_sql_injection_in_log_file(log_filepath):
         "solution": ""
     }
 
-    # Save summary to a JSON file
-    os.makedirs('summary', exist_ok=True)
-    summary_filepath = os.path.join('summary', 'sql_injection_summary.json')
-    with open(summary_filepath, 'w') as summary_file:
-        json.dump(summary, summary_file, indent=2)
-
     return summary
 
-logs = "./sqllogs.log"
+logs = "./filteredlogs.log"
 
 mixtral_msg = f"Detect the sql injection attack with the logs, {logs}"
 
