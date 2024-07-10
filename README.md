@@ -21,7 +21,7 @@ pip install -r requirements.txt
 ```bash
 uvicorn api_file:app --reload --port 8090
 ```
-You can install the langchain_openai and groc using conda
+You can install the langchain_openai and groq using conda
 ```bash
 conda install "name"
 ``` 
