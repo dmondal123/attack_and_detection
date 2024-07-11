@@ -35,12 +35,12 @@ def execute_script_remotely(host, port, username, key_filepath, local_script_pat
 
 if __name__ == "__main__":
     # Configuration
-    host = "192.168.x.x"  # Replace with the IP address of Laptop A
+    host = "172.18.87.159"  # Replace with the IP address of Laptop A
     port = 22  # Default SSH port
-    username = "your_username"  # Replace with the SSH username on Laptop A
-    key_filepath = "/path/to/private/key"  # Replace with the path to the private key on Laptop B
-    local_script_path = "/path/to/test_sql7.py"  # Replace with the path to the script on Laptop B
-    remote_script_path = "/remote/path/test_sql7.py"  # Replace with the desired path on Laptop A
+    username = "interview"  # Replace with the SSH username on Laptop A
+    key_filepath = "/Users/interview/.ssh"  # Replace with the path to the private key on Laptop B
+    local_script_path = "/Users/dmondal/Downloads/LLM-on-CPU/results/test_sql7.py"  # Replace with the path to the script on Laptop B
+    remote_script_path = "/Users/interview/Desktop/test_sql7.py"  # Replace with the desired path on Laptop A
 
     # Execute the script remotely
     execute_script_remotely(host, port, username, key_filepath, local_script_path, remote_script_path)

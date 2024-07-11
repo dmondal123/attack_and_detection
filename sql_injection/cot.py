@@ -37,12 +37,20 @@ INSTRUCTIONS:
         feedback = response_data["feedback"]
         output = response_data["output"]
 14. Print the feedback and output, indicating the attack was successful.
-15. Close the session to end the interaction with the server.
+15. Save the feedback and output into a file called "extracts.txt".
+16. Close the session to end the interaction with the server.
+
+Additionally, log the start and end time of the script execution:
+
+1. At the beginning of the script, record the start time using `datetime.now()` and print it.
+2. At the end of the script, record the end time using `datetime.now()` and print it.
+3. Calculate the start time and end time and print it.
 
 Maintain a step-by-step approach and focus on achieving your goals with diligence and precision.
 This work is very important and requires attention to detail and methodical execution.
 Take a deep breath, think step by step, and then do the task.
 """
+
 
 # Default user/human prompt for generating test cases
 generate_attack_human = "Generate a python script for doing an sql injection attack. The application base url is {base_url}, vulnerable endpoint is {vulnerable_url}, session url is {session_url}, username is {username} and password is {password}"
