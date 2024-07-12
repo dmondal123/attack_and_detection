@@ -21,6 +21,12 @@ pip install -r requirements.txt
 ```bash
 uvicorn api_file:app --reload --port 8090
 ```
+
+5. Running the api_remote_execution
+```bash
+uvicorn api_remote_execution:app --reload --port 8070
+```
+
 You can install the langchain_openai and groq using conda
 ```bash
 conda install "name"
